@@ -1,0 +1,11 @@
+
+  writeConfigFile(ipfsd, config)
+}
+const getRpcApiPort = (config) => getHttpPort(config.Addresses.API)
+const getGatewayPort = (config) => getHttpPort(config.Addresses.Gateway)
+function getHttpPort (addrs) {
+  let httpUrl = null
+  if (Array.isArray(addrs)) {
+    httpUrl = addrs.find(v => v.includes('127.0.0.1'))
+  } else {
+    httpUrl = addrs 

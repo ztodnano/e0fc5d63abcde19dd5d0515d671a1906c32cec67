@@ -1,0 +1,34 @@
+function mint(uint256 nonce, bytes32 challenge_digest) public returns (bool success) {
+
+   
+    uint reward_amount = getMiningReward();
+
+    
+    bytes32 digest =  keccak256(challengeNumber, msg.sender, nonce );
+
+     
+    if (digest != challenge_digest) revert();
+
+    //the digest must be smaller than the target
+    if(uint256(digest) > miningTarget) revert();
+ 
+
+     uint hashFound = rewardHashesFound[digest];
+     rewardHashesFound[digest] = epochCount;
+     if(hashFound != 0) revert();  //prevent the same answer from awarding twice
+
+    balances[msg.sender] = balances[msg.sender].add(reward_amount);
+
+    tokensMinted = tokensMinted.add(reward_amount);
+
+    //set readonly diagnostics data
+    lastRewardTo = msg.sender;
+    lastRewardAmount = reward_amount;
+    lastRewardEthBlockNumber = block.number;
+    
+    //start a new round of mining with a new 'challengeNumber'
+     _startNewMiningEpoch();
+
+      Mint(msg.sender, reward_amount, epochCount, challengeNumber );
+
+   return true;
